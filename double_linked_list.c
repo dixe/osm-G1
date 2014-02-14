@@ -29,7 +29,6 @@ void insert(dlist *this, item* thing, bool atTail){
   tmp->thing = thing;
 
   if (this->head == NULL){ // empty list
-    printf("HEAD IS NULL\n");
     // set this head to tmp
     this->head = tmp;
     //set this tail to tmp
@@ -82,7 +81,6 @@ item* extract(dlist *this, bool atTail){
   }
   else if (atTail){
     item = this->tail->thing;
-    printf("we got the item\n");
     /*
      * tails pointer points to the item just it, since tails pointer is item before xor 0
      * to remove the tail, we need to update the item befores pointer, so it does
@@ -151,10 +149,6 @@ item* search(dlist *this, bool(*matches)(item*)){
 
   while(cur != NULL && !done){
     // if they match, we are done and can return current item
-    printf("next cur pointer is: %d \n", (int)cur);
-    printf("this head is: %d\n", (int)this->head);
-    printf("this tail is: %d\n", (int)this->tail);
-
     if (matches(cur->thing)){
       done = 1;
     }
@@ -165,11 +159,9 @@ item* search(dlist *this, bool(*matches)(item*)){
         cur = cur->ptr;
         // points to head
         prev = this->head;
-        printf("cur == head\n");
       }
       else if(cur == this->tail){
         done = 1;
-        printf("cur == tail\n");
       }
       else{
         node* tmp = cur;
