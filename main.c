@@ -1,5 +1,9 @@
 #include "double_linked_list.h"
 #include <stdio.h>
+#include <string.h>
+
+// declare match_a function
+bool match_a(item * thing);
 
 int main(){
 
@@ -7,6 +11,8 @@ int main(){
   char * b = "b";
   char * d = "d";
   char * c ;
+
+
 
   dlist* list = (dlist*)init_dlist();
 
@@ -29,7 +35,11 @@ int main(){
   insert(list, d, 0); // insert 'd' at head
   insert(list, a, 0); // insert 'a' at head
 
-  printf("succses insert\n");
+  int test = ( (int) search(list,match_a));
+  if(test ){
+    printf("We found a 'a'\n");
+  }
+
   c = extract(list,0);
   printf("c is: %s\n",c); // should print "a"
   c = extract(list,0);
@@ -38,4 +48,21 @@ int main(){
   printf("c is: %s\n",c); // should print "b"
 
   return 0;
+}
+
+
+//matches on 'a'
+bool match_a(item *thing){
+  // 'a' is type int
+  if(thing == NULL){
+    return 0;
+  }
+
+  // se if we have a "a"
+  if( strcmp((char*) thing,"a")){
+    return 1;
+  }
+
+  return 0;
+
 }
