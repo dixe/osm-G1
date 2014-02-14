@@ -35,17 +35,19 @@ int main(){
   insert(list, d, 0); // insert 'd' at head
   insert(list, a, 0); // insert 'a' at head
 
+  reverse(list);
+
   int test = ( (int) search(list,match_a));
   if(test ){
     printf("We found a 'a'\n");
   }
 
   c = extract(list,0);
-  printf("c is: %s\n",c); // should print "a"
+  printf("c is: %s\n",c); // should print "b"
   c = extract(list,0);
   printf("c is: %s\n",c); // should print "d"
   c = extract(list,0);
-  printf("c is: %s\n",c); // should print "b"
+  printf("c is: %s\n",c); // should print "a"
 
   return 0;
 }
