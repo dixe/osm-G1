@@ -28,13 +28,15 @@ void insert(dlist *this, item* thing, bool atTail){
 
   tmp->thing = thing;
 
-  if (this->head ==NULL){ // empty list
+  if (this->head == NULL){ // empty list
+    printf("HEAD IS NULL\n");
     // set this head to tmp
     this->head = tmp;
     //set this tail to tmp
     this->tail = tmp;
     // set the pointer of head to null, since it is the end
     this->head->ptr = NULL;
+    this->tail->ptr = NULL;
   }
   else if(atTail){ //nonempty list insert at tail
     /*
@@ -75,6 +77,8 @@ item* extract(dlist *this, bool atTail){
   // if head->ptr is NULL list only has head in it
   if(this->head->ptr == NULL){
     item = this->head->thing;
+    this->head = NULL;
+    this->tail = NULL;
   }
   else if (atTail){
     item = this->tail->thing;
@@ -99,7 +103,6 @@ item* extract(dlist *this, bool atTail){
 
     item = this->head->thing;
 
-
     //get the item at head
     item = this->head->thing;
     /*
@@ -116,7 +119,6 @@ item* extract(dlist *this, bool atTail){
     this->head->ptr = (void*)((unsigned int) tmp ^ (unsigned int)this->head->ptr);
 
   }
-
 
   if(item ==NULL){
     printf("Item is NULL\n");
@@ -144,17 +146,40 @@ item* search(dlist *this, bool(*matches)(item*)){
 
   // we start at the head
   node* cur = this->head;
+  node* prev = NULL;
   int done = 0;
 
-  while(cur != NULL || !done){
-
+  while(cur != NULL && !done){
     // if they match, we are done and can return current item
+    printf("next cur pointer is: %d \n", (int)cur);
+    printf("this head is: %d\n", (int)this->head);
+    printf("this tail is: %d\n", (int)this->tail);
+
     if (matches(cur->thing)){
       done = 1;
     }
     else{ // else we check the next elm
       // when we get to the last elm, we xor a pointer with it self, and get NULL
-      cur = (void*) ((unsigned int) cur ^ (unsigned int)cur->ptr);
+      if (cur == this->head){
+        // points to item after head
+        cur = cur->ptr;
+        // points to head
+        prev = this->head;
+        printf("cur == head\n");
+      }
+      else if(cur == this->tail){
+        done = 1;
+        printf("cur == tail\n");
+      }
+      else{
+        node* tmp = cur;
+        /*
+         * to get next item, xor ptr with prev
+         */
+        cur = (void*) ((unsigned int) prev ^ (unsigned int) cur->ptr);
+        // set prev to what cur was before
+        prev = tmp;
+      }
     }
   }
   if(cur == NULL){
