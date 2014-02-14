@@ -20,7 +20,7 @@ dlist* init_dlist(){
 
 void insert(dlist *this, item* thing, bool atTail){
   if(this == NULL){
-    //error
+    //error;
     exit(1);
   }
 
@@ -157,7 +157,9 @@ item* search(dlist *this, bool(*matches)(item*)){
       cur = (void*) ((unsigned int) cur ^ (unsigned int)cur->ptr);
     }
   }
-
+  if(cur == NULL){
+    return NULL;
+  }
   return cur->thing;
 }
 
