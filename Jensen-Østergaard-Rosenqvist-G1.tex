@@ -12,6 +12,23 @@
 \usepackage{graphicx}
 \usepackage{fancyvrb}
 \usepackage{alltt}
+\usepackage{listings}
+
+\lstset{
+    breaklines     = true,
+    numbers        = left,
+    stepnumber     = 1,
+    numberstyle=\color{black},
+    showstringspaces=false,
+    language = C,
+    frame=single,
+    basicstyle=\ttfamily\scriptsize\color{red!40!black},
+    keywordstyle=\bfseries\color{blue},
+    commentstyle=\color{green!40!black},
+    identifierstyle=\ttfamily\color{black},
+    stringstyle=\color{yellow!65!black},
+}
+
 
 \renewcommand{\headrulewidth}{0.0pt} %sætter så der ikke er en linje%
 \renewcommand{\footrulewidth}{0.0pt} %sætter så der ikke er en linje%
@@ -32,6 +49,68 @@
 \section{Task 1}
 
 \section{Task 2}
+
+\subsection{syscall write}
+The way we implemented the \verb|syscall_write|, was by adding a function with the name \verb|sycall_write| inside \verb|proc/syscall.c|. And in the same file we added a case more in the function \verb|syscall_handle|, that called our \verb|syscall_write| with register A1, A2 and A3, and saved the result in V0. Below the code for \verb|syscal_write| is shown in chunks
+\newline
+\begin{lstlisting}
+device_t *dev;
+gcd_t *gcd;
+int len = 0;
+/*
+* we always write to terminal, and we don't need fhandle
+* assign it to itself to avoid compiler warnings ie errors
+*/
+fhandle = fhandle;
+\end{lstlisting}
+First of we \verb|device_t dev| to hold the console, the we create a \verb|gcd_t gcd| to do the writing at last we set fhandle to it self, because we don't need it, and if we didn't we would get unused variable error.
+\newline
+\begin{lstlisting}
+/*Find the system console (first tty)) */
+/* Should be FILEHANDLE_STDOUT, which is 1, but when
+* using 1 and not 0 i get kernel assert failed on dev
+*/
+dev = device_get(YAMS_TYPECODE_TTY,0);
+if(dev == NULL){
+  return -1;
+}
+/* Set generic char device*/
+gcd = ( gcd_t *) dev->generic_device;
+if(gcd == NULL){
+  return -1;
+}
+\end{lstlisting}
+In the code above on line 5 we set the device to stdin, as stated in the code comment, when setting it to stdout i.e. 1, the code would return -1, when setting to 0, it would write to console.
+\newline
+\begin{lstlisting}
+len = gcd->write(gcd, buffer, length);
+
+return len;
+\end{lstlisting}
+When the gcd has been set, we use it to write to the screen
+
+\subsection{syscall read}
+The read syscall is implemented in the same way as write, the only difference is that instead of calling \verb|syscall_write| we call \verb|syscall_read|, the arguments are the same and we also save the return value in register V0. The code is shown below.
+The first 20 lines are the same as write, where we initialize gcd and makes sure it is not NULL, after that we reach the code below. 
+\begin{lstlisting}
+while(len <= length && !( *(char*) (buffer+len-1)== 13)){
+    /* we read one byte at a type, so we increment len, and
+     * store the next byte on the offset of len
+     */
+    len += gcd->read(gcd, buffer + len, length);
+    /* If we don't hit enter, write to
+     * the screen what the user typed in
+     */
+    if(!( *(char*) (buffer+len-1)== 13)){
+      // should only write one char
+      syscall_write(0,buffer+len-1,1);
+    }
+  }
+\end{lstlisting}
+We decided to implement read, so that it could read more the one byte per syscall, the while loop runs until we reach the maximum length we are allowed to read, or when the user presses enter. In ascii 13 is carriage return, which is enter. This implementation can easily be change, so that it also stops on EOF, newline or whatever is preffered. The reason we choose enter for now, is because we only read from console, where it is normal to pres enter when done typing. One line 11 we echo the byte the user just entered. We only want to echo if the user didn't press enter. After exiting the loop we just return len, code not shown.
+
+\subsection{readwrite test}
+Here we explain the readwrite program used to test the two syscalls.
 
 
 
