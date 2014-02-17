@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+    \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[danish]{babel}
 \usepackage{fancyhdr}
@@ -47,7 +47,15 @@
 \setcounter{page}{1}
 
 \section{Task 1}
-
+Task 1 contains three files \verb|double_linked_list.h|, \verb|double_linked_list.c| and \verb|main.c|. The two first files are the implementation of the double linked list using xor, \verb|main.c| contains the testing of the task. To insert in O(1) time at either head or tail, we first check whether current head are NULL, if it is, we just insert the new node as head and tail, and set the pointers to NULL. We choose not to let the list be cyclic. Head always points to the next node, and tails points the previous node. If we insert at head and head != NULL, we first update current head's pointer, by xoring the current pointer, which points to the next node, with the new node we are about to insert. After updating, we set the next node's pointer to the current head, and then we set the list's head to the new node. Inserting at the tail is almost the same.
+\newline
+When extraction we get a new head or tail, and that is dependent on the node we extracted, so when extraction, we need to reset that pointer so it does not depend on the node we just removed. We do so by xor'ing the new head/tail's pointer with the node we just extracted, and set that to new new head/tail pointer.
+\newline
+To reverse the list, we just switch around head and tail, since head points to the next node, and tail points to previous, when switch around it is the same.
+\newline
+Searching in is just testing if the head is the item we are looking for, if it is we return the item it points to, if not we xor it with the previous node, to get the next node, and test that. We do this until we are at the tail, and if we have not found what we where lokking for, we return NULL.
+\newline
+We have added two functions \verb|init_dlist| which initialize a new empty list, and \verb|free_dlist| which extract each node, and free its memory.
 \section{Task 2}
 
 \subsection{syscall write}
@@ -107,14 +115,10 @@ while(len <= length && !( *(char*) (buffer+len-1)== 13)){
     }
   }
 \end{lstlisting}
-We decided to implement read, so that it could read more the one byte per syscall, the while loop runs until we reach the maximum length we are allowed to read, or when the user presses enter. In ascii 13 is carriage return, which is enter. This implementation can easily be change, so that it also stops on EOF, newline or whatever is preffered. The reason we choose enter for now, is because we only read from console, where it is normal to pres enter when done typing. One line 11 we echo the byte the user just entered. We only want to echo if the user didn't press enter. After exiting the loop we just return len, code not shown.
+We decided to implement read, so that it could read more the one byte per syscall, the while loop runs until we reach the maximum length we are allowed to read, or when the user presses enter. In ascii 13 is carriage return, which is enter. This implementation can easily be change, so that it also stops on EOF, newline or whatever is preferred. The reason we choose enter for now, is because we only read from console, where it is normal to press enter when done typing. One line 11 we echo the byte the user just entered. We only want to echo if the user didn't press enter. After exiting the loop we just return len, code not shown.
 
 \subsection{readwrite test}
-Here we explain the readwrite program used to test the two syscalls.
-
-
-
-
+Testing of read and write is just two buffers, one that starts out by writing to the screen and asking for input. Now it is a test of read, it will read until we have read 31 bytes, or the user presses enter. We then echo what the user wrote and ask to write again. The reason to write again, is that read echo every char that the  types, using write syscall, with at length argument of 1. By reading twice, we are sure that the second time, the buffer we read into are not full on '\\0', and in that way we test that write works correctly. If it does, it just echo the char the user types, if not, it writes the  rest of the buffer. Our testing of it found that both read and write works as intended.
 \end{document}
 
 
